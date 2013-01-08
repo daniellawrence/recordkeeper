@@ -34,7 +34,13 @@ class RecordKeeper():
         TODO: Work out if there is any benefit of reducing the fields that are
               getting returned.
         """
-        result_set = self.records.find(database_query, fields = display_fields)
+        print "db.find: %(database_query)s" % locals()
+
+        result_set = None
+        if display_fields:
+            result_set = self.records.find(database_query, fields = display_fields)
+        else:
+            result_set = self.records.find(database_query)
 
         # If database_query finds not results, then generate an exception
         if result_set.count() == 0:
@@ -70,6 +76,7 @@ class RecordKeeper():
         # Check to see if we already have this record in the database
         existing_record = self.find_one(unique_query)
         if existing_record:
+            print "Failing to add duplicate record: %(record_data)s" %  locals()
             return existing_record
 
         # If it is a brand new record, save it to the database.
@@ -83,7 +90,17 @@ class RecordKeeper():
         id 100%.
         Once the record is found delete it.
         """
+        print "db.remove_by_id: %(query_id)s" % locals()
         self.records.remove( query_id )
+
+        return True
+
+    def remove(self, database_query):
+        """ Search the database for records that match the database_query once
+        the records are found, delete them.
+        """
+        print "db.remove: %(database_query)s" % locals()
+        self.records.remove( database_query )
 
         return True
 
@@ -91,6 +108,6 @@ class RecordKeeper():
         """ Query the database using database_query, then update all the keys
         where record_data has some new data.
         """
-
-        database_results = self.records.update( database_query, record_data)
+        print  "db.update: %(database_query)s with %(record_data)s" % locals()
+        database_results = self.records.update( database_query, record_data, multi=True)
         return database_results
