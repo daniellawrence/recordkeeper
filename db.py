@@ -73,6 +73,8 @@ class RecordKeeper():
         record_name = record_data['name']
         unique_query = {'name': record_name}
 
+        #print "db.insert: %(record_data)s" % locals()
+
         # Check to see if we already have this record in the database
         existing_record = self.find_one(unique_query)
         if existing_record:
@@ -90,7 +92,7 @@ class RecordKeeper():
         id 100%.
         Once the record is found delete it.
         """
-        print "db.remove_by_id: %(query_id)s" % locals()
+        #print "db.remove_by_id: %(query_id)s" % locals()
         self.records.remove( query_id )
 
         return True
@@ -99,7 +101,7 @@ class RecordKeeper():
         """ Search the database for records that match the database_query once
         the records are found, delete them.
         """
-        print "db.remove: %(database_query)s" % locals()
+        #print "db.remove: %(database_query)s" % locals()
         self.records.remove( database_query )
 
         return True
@@ -108,6 +110,6 @@ class RecordKeeper():
         """ Query the database using database_query, then update all the keys
         where record_data has some new data.
         """
-        print  "db.update: %(database_query)s with %(record_data)s" % locals()
+        #print  "db.update: %(database_query)s with %(record_data)s" % locals()
         database_results = self.records.update( database_query, record_data, multi=True)
         return database_results

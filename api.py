@@ -38,14 +38,14 @@ def field_divider(field_list):
     return cli_query_list, display_field_list
 
 def get_display_fields(field_list):
-	""" Given a field_list, only return the display fields in a list. """
-	cli_query_list, display_field_list = field_divider(field_list)
-	return display_field_list
+    """ Given a field_list, only return the display fields in a list. """
+    cli_query_list, display_field_list = field_divider(field_list)
+    return display_field_list
 
 def get_query_fields(field_list):
-	""" Given a field_list, only return the display fields in a list. """
-	cli_query_list, display_field_list = field_divider(field_list)
-	return cli_query_list
+    """ Given a field_list, only return the display fields in a list. """
+    cli_query_list, display_field_list = field_divider(field_list)
+    return cli_query_list
 
 
 
@@ -123,10 +123,10 @@ def generate_database_query( cli_query ):
         return {"%s" % key: {'$lt': int(value) }}
 
     if query_operator == ".ss.":
-        return {"%s" % key: {'$regex': value}}
+        return {"%s" % key: {'$regex': '%s' % value}}
 
     if query_operator == "~":
-        return {"%s" % key: {'$regex': value }}
+        return {"%s" % key: {'$regex': '%s' % value }}
 
     if query_operator == ".in.":
         return {"%s" % key: {'$in': value.split(',') }}
@@ -153,11 +153,16 @@ def generate_database_multi_query( cli_query_list ):
 
 
 def find_records(field_list):
-	cli_query_list, display_field_list = field_divider(field_list)
-	database_query = generate_database_multi_query(cli_query_list)
-	rc = db.RecordKeeper()   
-	record_list = rc.find(database_query, display_field_list)
-	return record_list
+    cli_query_list, display_field_list = field_divider(field_list)
+
+    # If no query, then find all!
+    #if not cli_query_list:
+    #    cli_query_list = ['name.defined']
+
+    database_query = generate_database_multi_query(cli_query_list)
+    rc = db.RecordKeeper()   
+    record_list = rc.find(database_query, display_field_list)
+    return record_list
 
 def insert_record(record_data):
     cli_query_list, display_field_list = field_divider(record_data)
