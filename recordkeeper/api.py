@@ -77,6 +77,7 @@ def get_query_fields(field_list):
 
 
 def generate_database_multi_update( cli_query_list ):
+
     if type(cli_query_list).__name__ == 'str':
         cli_query_list = cli_query_list.split(' ')
 
@@ -112,11 +113,86 @@ def generate_database_multi_update( cli_query_list ):
 
     return update_dict
 
+def process_subquery( cli_query ):
+    """ If the cli_query had a subquery then this is the place that will sort
+    out that mess for you.
+    TODO: HORRBILE NEEDS A REFACTOR!
+    TODO: NOT TESTED
+    """
+    import re
+    querydict = re.search('(?P<key>\w+)(?P<op>.*)\[(?P<subkey>\w+)(?P<subop>\W+)(?P<subval>\w+)]',cli_query).groupdict()
+    subquery = "%(subkey)s%(subop)s%(subval)s" % querydict
+    key = querydict['key']
+    operator = querydict['op']
+    query = None
 
-def get_key_operator_value_from_cli_query( cli_query):
+    sq_key, sq_op, sq_value = get_key_operator_value_from_cli_query(subquery)
+    sq_database_query = generate_database_query( sq_key, sq_op, sq_value )
+
+
+    rc = db.RecordKeeper()
+    sq_record_list = rc.find(sq_database_query, [key])
+
+    sq_values_list = []
+
+    for sq_value in sq_record_list:
+        sq_values_list.append( sq_value[key] )
+
+    number_of_sq_values = len(sq_values_list)
+
+    print "Turned cli_query='%(cli_query)s'" % locals()
+    print "Into subquery='%(subquery)s'" % locals()
+    print "Into sq_database_query='%(sq_database_query)s'" % locals()
+    print "sq_record_list: ", sq_record_list
+    print "sq_values_list: ", sq_values_list
+
+    if number_of_sq_values == 1:
+        sq_value = sq_values_list[0]
+        query="%(key)s%(operator)s%(sq_value)s" % locals()
+
+    if number_of_sq_values > 1 and operator == "=":
+        filtered_sub_result = []
+        for v in sq_values_list:
+            filtered_sub_result.append( str(v) )
+        query="%s.in.%s" % ( key, ",".join(filtered_sub_result) )
+
+    if number_of_sq_values > 1 and operator in ['.gt.','>']:
+       filtered_sub_result = []
+       for v in sq_values_list:
+           try:
+              filtered_sub_result.append( float(v) )
+           except ValueError:
+              continue
+       max_value = max(filtered_sub_result)
+       query="%s>%s" % ( key, max_value )
+
+    if number_of_sq_values > 1 and operator in ['.lt.','<']:
+       filtered_sub_result = []
+       for v in sq_values_list:
+           try:
+              filtered_sub_result.append( float(v) )
+           except ValueError:
+              continue
+       min_value = min(filtered_sub_result)
+       query="%s<%s" % ( key, min_value )
+
+
+    print "--"
+    print "Query: ", query
+
+    return query
+
+
+
+
+def get_key_operator_value_from_cli_query( cli_query ):
     """ Work out the key, operator and the value from a cli_query. """
 
     debug("get_kov: %(cli_query)s" % locals())
+
+    # TODO: Seams hacky. Think of a better way to do this
+    if '[' in cli_query and ']' in cli_query:
+        cli_query = process_subquery(cli_query)
 
     query_operator = None
     for operator in OPERATOR_LIST:
