@@ -33,7 +33,5 @@ def import_hostinfo_csv(filename):
 
     print stats, finished - start, filename
 
-import_hostinfo_csv("/home/dannyla/Dropbox/RecordKeeperProject/raw/hostinfo_linux.txt")
-import_hostinfo_csv("/home/dannyla/Dropbox/RecordKeeperProject/raw/hostinfo_solaris.txt")
-import_hostinfo_csv("/home/dannyla/Dropbox/RecordKeeperProject/raw/hostinfo_windows.txt")
-
+if __name__ == '__main__':
+    main(sys.argv[1])
