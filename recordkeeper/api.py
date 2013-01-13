@@ -135,6 +135,19 @@ def get_key_operator_value_from_cli_query( cli_query):
     else:
         (key, value) = cli_query.split( query_operator )
 
+    # if the type of value is a string, and it 
+    if type(value).__name__ in [ "str", 'unicode' ] and value.lower() == "true":
+        value = True
+
+    # if the type of value is a string, and it 
+    if type(value).__name__  in [ "str", 'unicode' ]  and value.lower() == "false":
+        value = False
+
+    if type(value).__name__  in [ "str", 'unicode' ]  and  value.isdigit():
+        value = int(value)
+
+    debug("get_kov: %s<%s>" % ( value, type(value).__name__ ))
+
     return key, query_operator, value
 
 
@@ -150,17 +163,6 @@ def generate_database_query( key, query_operator, value ):
     # If the query_operator is 'undefined', create the $exists query
     if query_operator == '.undefined':
         return {'%s' % key: {'$exists': False }}
-
-    # if the type of value is a string, and it 
-    if type(value).__name__ in [ "str", 'unicode' ] and value.lower() == "true":
-        value = True
-
-    # if the type of value is a string, and it 
-    if type(value).__name__ == "str" and value.lower() == "false":
-        value = False
-
-    if type(value).__name__ == "str" and  value.isdigit():
-        value = int(value)
 
     # If query is an = then simple operator
     if query_operator == "=":
