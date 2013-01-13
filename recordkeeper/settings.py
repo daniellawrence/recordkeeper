@@ -6,7 +6,7 @@ DATABASE_PORT = 27017
 DATABASE_NAME = "recordkeeper"
 
 # enable for DEBUG messages to be printed
-DEBUG=True
+DEBUG=False
 
 # IP that the basic webserver will start on
 WEBSERVER_HOST = '0.0.0.0'

@@ -119,8 +119,7 @@ def cli_saved_queries_get(query_name):
         return 
     print " ".join(query_data)
 
-def print_args():
-    args = sys.argv[2:]
+def print_args(args):
     parser = argparse.ArgumentParser("%s print" % sys.argv[0])
     parser.add_argument("field", type=str, nargs='+') 
     args = parser.parse_args(args)
@@ -128,8 +127,7 @@ def print_args():
     cli_print_record( fields )
 
 
-def query_args():
-    args = sys.argv[2:]
+def query_args(args):
     parser = argparse.ArgumentParser("%s query" % sys.argv[0])
     parser.add_argument("--list", action='store_true')
     #parser.add_argument("-c", "--comment", type=str)
@@ -154,16 +152,14 @@ def query_args():
 
 
 
-def new_args():
-    args = sys.argv[2:]
+def new_args(args):
     parser = argparse.ArgumentParser("%s new" % sys.argv[0])
     parser.add_argument("key=value", type=str, nargs='+') 
     args = parser.parse_args(args)
     record_data = args.__dict__['key=value']
     cli_add_record(record_data)
 
-def update_args():
-    args = sys.argv[2:]
+def update_args(args):
     parser = argparse.ArgumentParser("%s update" % sys.argv[0])
     parser.add_argument("record_data", metavar="key=new_value", type=str, nargs='+') 
     parser.add_argument("WHERE", type=str)
@@ -177,8 +173,7 @@ def update_args():
     print "-"*10
     cli_print_record(field_list)
 
-def delete_args():
-    args = sys.argv[2:]
+def delete_args(args):
     parser = argparse.ArgumentParser("%s delete" % sys.argv[0])
     parser.add_argument("--force", action='store_true')
     parser.add_argument("key=value", type=str, nargs='+') 
@@ -209,6 +204,9 @@ def main():
             print "Missing application switch: print, new, update delete"
             sys.exit(1)
         application_switch = sys.argv[1]
+        args = args[2:]
+    else:
+        args = args[1:]
 
     if 'debug:' in application_switch:
         settings.DEBUG = True
@@ -219,23 +217,23 @@ def main():
 
 
     if application_switch in [ "print", 'rk_print.py', 'rk_print']:
-        print_args()
+        print_args(args)
         pass
 
     if application_switch ==  [ "query", 'rk_query.py', 'rk_query']:
-        query_args()
+        query_args(args)
         pass
 
     if application_switch ==  [ "new", 'rk_new.py', 'rk_new']:
-        new_args()
+        new_args(args)
         pass
 
     if application_switch == [ "update", 'rk_update.py', 'rk_update']:
-        update_args()
+        update_args(args)
         pass
 
     if application_switch ==  [ "delete", 'rk_delete.py', 'rk_delete']:
-        delete_args()
+        delete_args(args)
         pass
 
     sys.exit(1)

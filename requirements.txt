@@ -1,4 +1,11 @@
+Flask==0.9
+Jinja2==2.6
+RecordKeeper==0.0
+Werkzeug==0.8.3
 argparse==1.2.1
+bson==0.3.3
 distribute==0.6.24
-pymongo==2.4.1
+mongo==0.2.0
+pymongo==2.4.1-
+pytz==2012j
 wsgiref==0.1.2

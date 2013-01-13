@@ -152,14 +152,14 @@ def generate_database_query( key, query_operator, value ):
         return {'%s' % key: {'$exists': False }}
 
     # if the type of value is a string, and it 
-    if type(value).__name__ == "str" and value.lower() == "true":
+    if type(value).__name__ in [ "str", 'unicode' ] and value.lower() == "true":
         value = True
 
     # if the type of value is a string, and it 
     if type(value).__name__ == "str" and value.lower() == "false":
         value = False
 
-    if value.isdigit():
+    if type(value).__name__ == "str" and  value.isdigit():
         value = int(value)
 
     # If query is an = then simple operator
@@ -187,11 +187,22 @@ def generate_database_query( key, query_operator, value ):
     if query_operator == "~":
         return {"%s" % key: {'$regex': '%s' % value }}
 
+    value_list = []
+    if type(value).__name__ in ['str','unicode'] and ',' in value:
+        value_list = value.split(',') 
+        for index, value in enumerate(value_list):
+            try:
+                value_list[index] = int(value)
+            except ValueError:
+                continue
+    else:
+        value_list = [ value ]
+
     if query_operator == ".in.":
-        return {"%s" % key: {'$in': value.split(',') }}
+        return {"%s" % key: {'$in': value_list }}
 
     if query_operator == ".nin.":
-        return {"%s" % key: {'$nin': value.split(',') }}
+        return {"%s" % key: {'$nin': value_list }}
 
     raise NotImplementedError("Was not able to work generate a filter: %(cli_query)s" % locals())
 

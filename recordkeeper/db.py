@@ -107,7 +107,7 @@ class RecordKeeper():
 
         # If database_query finds not results, then generate an exception
         if result_set.count() == 0:
-            raise NoRecordsFound("No records found")
+            raise NoRecordsFound("No records found: %(database_query)s" % locals())
 
         return list(result_set)
 
