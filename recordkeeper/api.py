@@ -120,7 +120,7 @@ def process_subquery( cli_query ):
     TODO: NOT TESTED
     """
     import re
-    querydict = re.search('(?P<key>\w+)(?P<op>.*)\[(?P<subkey>\w+)(?P<subop>\W+)(?P<subval>\w+)]',cli_query).groupdict()
+    querydict = re.search('(?P<key>\w+)(?P<op>.*)\((?P<subkey>\w+)(?P<subop>\W+)(?P<subval>\w+)\)',cli_query).groupdict()
     subquery = "%(subkey)s%(subop)s%(subval)s" % querydict
     key = querydict['key']
     operator = querydict['op']
@@ -140,21 +140,23 @@ def process_subquery( cli_query ):
 
     number_of_sq_values = len(sq_values_list)
 
-    print "Turned cli_query='%(cli_query)s'" % locals()
-    print "Into subquery='%(subquery)s'" % locals()
-    print "Into sq_database_query='%(sq_database_query)s'" % locals()
-    print "sq_record_list: ", sq_record_list
-    print "sq_values_list: ", sq_values_list
 
     if number_of_sq_values == 1:
         sq_value = sq_values_list[0]
         query="%(key)s%(operator)s%(sq_value)s" % locals()
 
-    if number_of_sq_values > 1 and operator == "=":
+    if number_of_sq_values > 1 and operator in [ "=", '.in.' ]:
         filtered_sub_result = []
         for v in sq_values_list:
             filtered_sub_result.append( str(v) )
         query="%s.in.%s" % ( key, ",".join(filtered_sub_result) )
+
+    if number_of_sq_values > 1 and operator in [ "!", '.nin.' ]:
+        filtered_sub_result = []
+        for v in sq_values_list:
+            filtered_sub_result.append( str(v) )
+        query="%s.nin.%s" % ( key, ",".join(filtered_sub_result) )
+
 
     if number_of_sq_values > 1 and operator in ['.gt.','>']:
        filtered_sub_result = []
@@ -177,8 +179,7 @@ def process_subquery( cli_query ):
        query="%s<%s" % ( key, min_value )
 
 
-    print "--"
-    print "Query: ", query
+    print "Turned cli_query='%(cli_query)s' into '%(query)s'" % locals()
 
     return query
 
@@ -191,8 +192,9 @@ def get_key_operator_value_from_cli_query( cli_query ):
     debug("get_kov: %(cli_query)s" % locals())
 
     # TODO: Seams hacky. Think of a better way to do this
-    if '[' in cli_query and ']' in cli_query:
+    if '(' in cli_query and ')' in cli_query:
         cli_query = process_subquery(cli_query)
+        print "cli_query=%(cli_query)s" % locals()
 
     query_operator = None
     for operator in OPERATOR_LIST:

@@ -16,10 +16,6 @@ class TestQuery(unittest.TestCase):
         recordkeeper.api.insert_record("name=bob age=3 sex=male")
         recordkeeper.api.insert_record("name=greg age=3 job=False")
 
-    #def tearDown(self):
-    #    recordkeeper.settings.DATABASE_NAME = "unittest"
-    #    recordkeeper.api.delete_record({})
-
     def matches_excpected_records(self, query, expected_records):
         if expected_records > 0:
             all_records = recordkeeper.api.find_records(query)
@@ -58,6 +54,14 @@ class TestQuery(unittest.TestCase):
         #
         self.matches_excpected_records("name=john name=jeff", 2)
         self.matches_excpected_records("name!john name=john", 6)
+
+    def test_subquery(self):
+        self.matches_excpected_records("age=(sex=female)", 3)
+        self.matches_excpected_records("name.in.(sex=male)", 5)
+        self.matches_excpected_records("name.nin.(sex=male)", 1)
+
+        self.matches_excpected_records("sex=(name=john)", 5)
+        self.matches_excpected_records("sex!(name=john)", 1)
 
 
     def test_value_int(self):
@@ -156,8 +160,9 @@ class TestQuery(unittest.TestCase):
         self.matches_excpected_records("age.nin.1,2", 3)
 
     def test_bad_search_rasies_error(self):
-        with self.assertRaises(recordkeeper.rc_exceptions.NoRecordsFound):
-            recordkeeper.api.find_records({'bad_key': 'bad_value'})
+        #with self.assertRaises(recordkeeper.rc_exceptions.NoRecordsFound):
+        #    recordkeeper.api.find_records({'bad_key': 'bad_value'})
+        self.matches_excpected_records("name=bad_value", 0)
 
 if __name__ == '__main__':
     unittest.main()
