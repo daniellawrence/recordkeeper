@@ -8,5 +8,5 @@ services:
   - mongodb
 # command to run tests
 script: 
-  - nosetests --with-coverage--cover-package=recordkeeper tests/*
+  - nosetests --with-coverage --cover-package=recordkeeper tests/*
 
