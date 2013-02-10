@@ -380,7 +380,7 @@ def insert_record(record_data):
     new_record = rc.insert( database_query )
     return new_record
 
-def delete_record(field_list):
+def delete_record(field_list, force=False):
     #cli_query_list, display_field_list = field_divider(field_list)
     #database_query = generate_database_multi_query( cli_query_list )
     database_query = None
@@ -401,7 +401,7 @@ def delete_record(field_list):
 
 
     rc = db.RecordKeeper()
-    rc.remove( database_query )
+    rc.remove( database_query, force=force )
 
 
 def update_record(field_list, record_data):

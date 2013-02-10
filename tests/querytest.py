@@ -8,7 +8,7 @@ class TestQuery(unittest.TestCase):
 
     def setUp(self):
         recordkeeper.settings.DATABASE_NAME = "unittest"
-        recordkeeper.api.delete_record({})
+        recordkeeper.api.delete_record("name.defined", force=True)
         recordkeeper.api.insert_record("name=john age=1 sex=male")
         recordkeeper.api.insert_record("name=jeff age=2 sex=male")
         recordkeeper.api.insert_record("name=fred age=2 sex=male")
