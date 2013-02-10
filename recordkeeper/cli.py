@@ -9,7 +9,7 @@ import os
 import api
 import settings
 from rc_exceptions import NoRecordsFound, DuplicateRecord, MissingRequiredInformaton, \
-                          InvaildQuery
+                          InvaildQuery, RecordKeeperException
 
 
 def debug(msg):
@@ -17,7 +17,7 @@ def debug(msg):
     if settings.DEBUG:
         print "DEBUG: cli.%(msg)s" % locals()
 
-def cli_print_record(field_list):
+def cli_print_record( field_list, showid=False):
     """ accept a list of fields (field_list), then print out the results from
     the query.
     """
@@ -46,19 +46,26 @@ def cli_print_record(field_list):
             try:
                 print simple_format % record
             except KeyError as error:
-                debug("cli_print_record: unable to print fields for record")
+                debug("cli_print_record: unable to print fields for record: %(error)s" % locals())
     else:
         for record in record_list:
+            print "--"
             #print "name: %(name)s" % record
             for key, value in record.items():
-                if type(value).__name__ in [ 'str', 'unicode']:
+                if type(value).__name__ in [ 'str', 'unicode','int','float']:
                     print "%(key)s: %(value)s" % locals()
                     continue
-                if type(value).__name__ in [ 'list', 'set']:
+                elif type(value).__name__ in [ 'list', 'set']:
                     print "%s: %s" % ( key, ",".join( value) )
                     continue
+                elif type(value).__name__ == 'ObjectId':
+                    if showid:
+                        print "%(key)s: %(value)s" % locals()
+                    continue
+                else:
+                    raise RecordKeeperException("Unhandled data format '%s' <%s>" % ( key, type(value).__name__))
 
-            print "-"*10
+
 
 def cli_add_record(record_data):
     """ accept a list of fields (field_list), then print out the results from
@@ -76,14 +83,18 @@ def cli_add_record(record_data):
         print "Adding new record failed. %(error)s" % locals()
         return None
 
-
     return new_record
 
 def cli_delete_record(field_list):
     """ accept a list of fields (field_list), and delete all the records that
     the query matches.
     """
-    api.delete_record(field_list)
+    try:
+        api.delete_record(field_list)
+    except NoRecordsFound as error:
+        print "%(error)s" % locals()
+        return 
+
 
 def cli_update_record(field_list, record_data):
     """ accept a field_list and record_data. 
@@ -121,10 +132,12 @@ def cli_saved_queries_get(query_name):
 
 def print_args(args):
     parser = argparse.ArgumentParser("%s print" % sys.argv[0])
+    parser.add_argument("--showid", action='store_true', default=False)
     parser.add_argument("field", type=str, nargs='+') 
     args = parser.parse_args(args)
     fields = args.field
-    cli_print_record( fields )
+    print args
+    cli_print_record(  fields, showid=args.showid)
 
 
 def query_args(args):
@@ -179,6 +192,7 @@ def delete_args(args):
     parser.add_argument("key=value", type=str, nargs='+') 
     args = parser.parse_args(args)
     field_list = args.__dict__['key=value']
+
     if args.force:
         cli_delete_record(field_list)
     else:
@@ -218,24 +232,25 @@ def main():
 
     if application_switch in [ "print", 'rk_print.py', 'rk_print']:
         print_args(args)
-        pass
+        sys.exit(0)
 
-    if application_switch ==  [ "query", 'rk_query.py', 'rk_query']:
+    if application_switch  in   [ "query", 'rk_query.py', 'rk_query']:
         query_args(args)
-        pass
+        sys.exit(0)
 
-    if application_switch ==  [ "new", 'rk_new.py', 'rk_new']:
+    if application_switch in   [ "new", 'rk_new.py', 'rk_new']:
         new_args(args)
-        pass
+        sys.exit(0)
 
-    if application_switch == [ "update", 'rk_update.py', 'rk_update']:
+    if application_switch  in  [ "update", 'rk_update.py', 'rk_update']:
         update_args(args)
-        pass
+        sys.exit(0)
 
-    if application_switch ==  [ "delete", 'rk_delete.py', 'rk_delete']:
+    if application_switch  in   [ "delete", 'rk_delete.py', 'rk_delete']:
         delete_args(args)
-        pass
+        sys.exit(0)
 
+    print "Unknown application call %(application_switch)s" % locals()
     sys.exit(1)
 
 if __name__ == '__main__':

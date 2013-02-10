@@ -190,6 +190,7 @@ class RecordKeeper():
         the records are found, delete them.
         """
         debug("remove: %(database_query)s" % locals())
+        self.find( database_query)
         self.records.remove( database_query )
 
         return True

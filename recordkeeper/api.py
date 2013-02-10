@@ -386,13 +386,18 @@ def delete_record(field_list):
     database_query = None
 
     # If the record data is a string then convert it to a dict()
-    if type(field_list).__name__ in ['str', 'unicode']:
+    if type(field_list).__name__ in ['str', 'unicode', 'list']:
         cli_query_list, display_field_list = field_divider(field_list)
         database_query = generate_database_multi_query( cli_query_list )
         
     # If the record_data is already a dict, then add it to the database.
     if type(field_list).__name__ in ['dict']:
         database_query = field_list
+
+
+
+    if not database_query:
+        raise rc_exceptions.InvaildQuery("Didn't build a query from '%(field_list)s'" % locals())
 
 
     rc = db.RecordKeeper()
