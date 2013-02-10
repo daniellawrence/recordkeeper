@@ -3,6 +3,8 @@ recordkeeper
 
 A key-value store that is for cli users and software.
 
+[![Build Status](https://travis-ci.org/daniellawrence/recordkeeper.png?branch=master)](https://travis-ci.org/daniellawrence/recordkeeper)
+
 install
 --------
 
