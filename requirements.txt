@@ -8,3 +8,4 @@ mongo==0.2.0
 pymongo==2.4.1
 pytz==2012j
 wsgiref==0.1.2
+coverage==3.6
