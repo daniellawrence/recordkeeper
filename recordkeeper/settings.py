@@ -1,6 +1,7 @@
 # Name of the mongodb server
 DATABASE_HOST = "192.168.122.54"
 DATABASE_HOST = "dansysadm.com"
+DATABASE_HOST = "127.0.0.1"
 
 # port of the mongodb service
 DATABASE_PORT = 27017
