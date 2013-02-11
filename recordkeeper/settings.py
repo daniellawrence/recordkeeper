@@ -1,6 +1,4 @@
 # Name of the mongodb server
-DATABASE_HOST = "192.168.122.54"
-DATABASE_HOST = "dansysadm.com"
 DATABASE_HOST = "127.0.0.1"
 
 # port of the mongodb service
@@ -15,3 +13,5 @@ DEBUG=False
 WEBSERVER_HOST = '0.0.0.0'
 # PORT that the basic webserver will listen on
 WEBSERVER_PORT = 5000
+
+from local_settings import *

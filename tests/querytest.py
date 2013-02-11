@@ -2,6 +2,7 @@
 import unittest
 import recordkeeper.settings
 import recordkeeper.api
+import recordkeeper.db
 import recordkeeper.rc_exceptions
 
 class TestQuery(unittest.TestCase):
@@ -9,7 +10,7 @@ class TestQuery(unittest.TestCase):
     def setUp(self):
         recordkeeper.settings.DATABASE_NAME = "unittest"
         recordkeeper.api.delete_record("name.defined", force=True)
-        recordkeeper.api.insert_record("name=john age=1 sex=male")
+        recordkeeper.api.insert_record("name=john age=1 sex=male address='key with spaces'")
         recordkeeper.api.insert_record("name=jeff age=2 sex=male")
         recordkeeper.api.insert_record("name=fred age=2 sex=male")
         recordkeeper.api.insert_record("name=sandy age=3 sex=female,male")
@@ -31,6 +32,50 @@ class TestQuery(unittest.TestCase):
 
     def test_records(self):
         self.matches_excpected_records({}, 6)
+
+    def test_query_with_spaces(self):
+        self.matches_excpected_records("address='key with spaces'", 1)
+
+        
+    def test_query_for_space(self):
+        self.matches_excpected_records("address~' '", 1)
+
+    def test_query_value_has_spaces(self):
+        self.matches_excpected_records("address~spaces", 1)
+
+    def test_get_display_fields(self):
+        data = recordkeeper.api.get_display_fields("name name.defined")
+        self.assertEqual(data, ['name'])
+
+    def test_get_multi_display_fields(self):
+        data = recordkeeper.api.get_display_fields("name age name.defined age.defined")
+        self.assertEqual(data, ['name', 'age'])
+
+    def test_get_query_fields(self):
+        data = recordkeeper.api.get_query_fields("name name.defined")
+        self.assertEqual(data, ['name.defined'])
+
+    def test_get_query_fields_multi(self):
+        data = recordkeeper.api.get_query_fields("name age name.defined age.defined")
+        self.assertEqual(data, ['name.defined', 'age.defined'])
+
+    def test_query_substring(self):
+        self.matches_excpected_records("sex.ss.female", 1)
+        self.matches_excpected_records("sex.ss.male", 5)
+
+    def test_subquery_gt(self):
+        self.matches_excpected_records("sex=(age>1)", 5)
+        self.matches_excpected_records("sex=(age<6)", 5)
+
+
+
+    def test_key_list(self):
+        rc = recordkeeper.db.RecordKeeper()
+        key_list = rc.list_keys()
+        self.assertEqual(key_list,['_id', 'address', 'age', 'job', 'name', 'sex'])
+
+
+
 
     def test_value_list(self):
         self.matches_excpected_records("sex=female", 1)

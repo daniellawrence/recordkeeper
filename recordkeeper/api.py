@@ -88,13 +88,6 @@ def generate_database_multi_update( cli_query_list ):
             (key, value) = cli_query.split('=')
             update_dict['$set'].update( {'%(key)s' % locals(): value } )
 
-
-        if '+' in cli_query:
-            raise NotImplementedError("unable to append to lists")
-
-        if '-' in cli_query:
-            raise NotImplementedError("unable to pop from lists")
-
         # pushAll and popAll have been removed because the logic to convert a single
         # item into a list ( aka, string to list, then update ), has not been completed
         # once this is completed we should be able to do more list logic.
@@ -136,7 +129,10 @@ def process_subquery( cli_query ):
     sq_values_list = []
 
     for sq_value in sq_record_list:
-        sq_values_list.append( sq_value[key] )
+        try:
+            sq_values_list.append( sq_value[key] )
+        except KeyError as error:
+            print "%(error)s - %(sq_value)s %(key)s" % locals()
 
     number_of_sq_values = len(sq_values_list)
 
@@ -254,12 +250,12 @@ def generate_database_query( key, query_operator, value ):
     # db.myCollection.find( { a : { $gt: 3 } } );
     # { key: { $gt: value } } 
     if query_operator in [ ">", ".gt." ]:
-        return {"%s" % key: {'$gt': int(value) }}
+        return {"%s" % key: {'$gt': float(value) }}
 
     # db.myCollection.find( { a : { $lt: 3 } } );
     # { "%s.value" % key: { $lt: value } } 
     if query_operator in [ "<", '.lt.' ]:
-        return {"%s" % key: {'$lt': int(value) }}
+        return {"%s" % key: {'$lt': float(value) }}
 
     if query_operator == ".ss.":
         return {"%s" % key: {'$regex': '%s' % value}}

@@ -9,7 +9,7 @@ class TestQuery(unittest.TestCase):
     def setUp(self):
         recordkeeper.settings.DATABASE_NAME = "unittest"
         recordkeeper.api.delete_record("name.defined", force=True)
-        recordkeeper.api.insert_record("name=john age=1 sex=male")
+        recordkeeper.api.insert_record("name=john age=1 sex=male address='key with spaces'")
         recordkeeper.api.insert_record("name=jeff age=2 sex=male")
         recordkeeper.api.insert_record("name=fred age=2 sex=male")
         recordkeeper.api.insert_record("name=sandy age=3 sex=female,male")
@@ -28,7 +28,6 @@ class TestQuery(unittest.TestCase):
     def matches_expected_exception(self, query, expected_exception):
         with self.assertRaises(expected_exception):
             recordkeeper.api.find_records(query)
-
 
     def test_add_records(self):
     	self.matches_excpected_records("name=new_john", 0)
