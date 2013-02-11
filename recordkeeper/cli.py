@@ -52,7 +52,7 @@ def cli_print_record( field_list, showid=False):
             print "--"
             #print "name: %(name)s" % record
             for key, value in record.items():
-                if type(value).__name__ in [ 'str', 'unicode','int','float']:
+                if type(value).__name__ in [ 'str', 'unicode','int','float','bool']:
                     print "%(key)s: %(value)s" % locals()
                     continue
                 elif type(value).__name__ in [ 'list', 'set']:
@@ -62,6 +62,9 @@ def cli_print_record( field_list, showid=False):
                     if showid:
                         print "%(key)s: %(value)s" % locals()
                     continue
+                elif type(value).__name__ == 'NoneType':
+                    continue
+
                 else:
                     raise RecordKeeperException("Unhandled data format '%s' <%s>" % ( key, type(value).__name__))
 
@@ -136,7 +139,6 @@ def print_args(args):
     parser.add_argument("field", type=str, nargs='+') 
     args = parser.parse_args(args)
     fields = args.field
-    print args
     cli_print_record(  fields, showid=args.showid)
 
 
@@ -147,7 +149,6 @@ def query_args(args):
     parser.add_argument("query_name", type=str )
     parser.add_argument("key=value", type=str, nargs='*') 
     args = parser.parse_args(args)
-    print args
 
     query_data = args.__dict__['key=value']
     query_name = args.query_name
@@ -183,7 +184,6 @@ def update_args(args):
     field_list = args.field_list
     
     cli_update_record(field_list, record_data)
-    print "-"*10
     cli_print_record(field_list)
 
 def delete_args(args):
