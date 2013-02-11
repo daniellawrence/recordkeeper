@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import csv
-import api
-import rc_exceptions
 import time
-import settings
+import sys
 
-settings.DEBUG = False
+import recordkeeper.api
+import recordkeeper.rc_exceptions
+import recordkeeper.settings
+
+recordkeeper.settings.DEBUG = False
 def import_hostinfo_csv(filename):
     start = time.time()
     f = open(filename)
@@ -17,16 +19,10 @@ def import_hostinfo_csv(filename):
         row['name'] = row['hostname']
         row['_type'] = row['type']
 
-        #url_add = []
-        #for key, value in row.items():
-        #    if value:
-        #        url_add.append( "%(key)s='%(value)s'" % locals())
-        #print "http://localhost:5000/json/add_record/%s" % " ".join( url_add)
-
         try:
-            api.insert_record( row )
+            recordkeeper.api.insert_record( row )
             stats['added'] += 1
-        except rc_exceptions.DuplicateRecord as error:
+        except recordkeeper.rc_exceptions.DuplicateRecord as error:
             stats['failed'] += 1
 
     finished = time.time()
@@ -34,4 +30,4 @@ def import_hostinfo_csv(filename):
     print stats, finished - start, filename
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    import_hostinfo_csv(sys.argv[1])
