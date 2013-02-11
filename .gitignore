@@ -33,3 +33,6 @@ nosetests.xml
 .project
 .pydevproject
 build
+
+htmlcov
+local_settings.py
