@@ -14,4 +14,8 @@ WEBSERVER_HOST = '0.0.0.0'
 # PORT that the basic webserver will listen on
 WEBSERVER_PORT = 5000
 
-from local_settings import *
+try:
+	from local_settings import *
+except ImportError:
+	pass
+
