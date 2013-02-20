@@ -9,9 +9,12 @@ pre-install:mongodb
 -------------------
 
 Install mongodb on your database server ( could be the same system. )
+
     $ sudo apt-get install mongodb
+
 If mongodb is not installed on the same system as recordkeeper then you need to 
 adjust the bind_ip in /etc/mongodb.conf
+
     $ sudo vi  /etc/mongodb.conf
     bind_ip = 0.0.0.0
     $ sudo service mongodb restart
@@ -21,22 +24,32 @@ pre-install:pymongo
 
 In order for pymongo to compile from the pip install you need to have the python-dev
 packages installed on your system.
+
     $ sudo apt-get install python-dev
 
 install:recordkeeper
 ---------------------
 
 Create a new virtual env for recordkeeper
+
     $ virtualenv ~/virtualenv/recordkeeper
+
 Activate it.
+
     $ ~/virtualenv/recordkeeper/bin/activate
+
 Clone the repo
+
     $ mkdir ~/git
     $ git clone git://github.com/daniellawrence/recordkeeper.git
+
 Install the requirements
+
     $ cd recordkeeper
     $ pip install -r requirements.txt
-Install recordkeeper!
+
+Install recordkeeper
+
     $ ./setup.py install
 
 
@@ -53,7 +66,7 @@ start
     $ cd ~/git/recordkeeper
     $ tests/querytest.py
 
-examples
+basic examples
 --------
 
     $ cd ~/git/recordkeeper/bin
