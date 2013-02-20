@@ -64,7 +64,7 @@ start
 -----
 
     $ cd ~/git/recordkeeper
-    $ tests/querytest.py
+    $ tests/querytesthttps://github.com/daniellawrence/recordkeeper/fork.py
 
 basic examples
 --------
@@ -99,6 +99,19 @@ simple regex
     john
 
 
+How to help: Submit a bug report / issue
+-----------------------------------------
 
+ * [Open a issue](https://github.com/daniellawrence/recordkeeper/issues/new)
+ * Update the issue and submit it
+ * +5 dkp!
 
-    
+How to help: Write some code
+------------------------------
+
+ * [Fork the code](https://github.com/daniellawrence/recordkeeper/fork)
+ * Make your updates
+ * Commit your updates
+ * push your updates into your tree
+ * Submit a pull request
+ * +10 dkp!
