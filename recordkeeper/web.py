@@ -55,6 +55,7 @@ def encode_model(obj, recursive=False):
 
 @app.route("/")
 def index():
+    """ basic list of all the objects. """
     format_list = ['html', 'json']
     response = []
     for format in format_list:
