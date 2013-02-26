@@ -219,16 +219,17 @@ def get_key_operator_value_from_cli_query(cli_query):
 
     value_type = type(value).__name__
 
+
     # If the value is true or True, then convert it to a boolean
     if value_type in ["str", 'unicode'] and value.lower() == "true":
         value = True
 
     # If the value is false or False, then convert it to a boolean
-    if value_type in ["str", 'unicode'] and value.lower() == "false":
+    elif value_type in ["str", 'unicode'] and value.lower() == "false":
         value = False
 
     # If the value is a digit, then convert it to an int.
-    if value_type in ["str", 'unicode'] and value.isdigit():
+    elif value_type in ["str", 'unicode'] and value.isdigit():
         value = int(value)
 
     debug("get_kov: %s<%s>" % (value, value_type))
