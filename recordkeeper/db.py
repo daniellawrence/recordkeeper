@@ -3,7 +3,7 @@
 import pymongo
 import settings
 from rc_exceptions import DuplicateRecord, NoRecordsFound, InvaildQuery, \
-                          MissingRequiredInformaton
+                          MissingRequiredInformaton, RequiredField
 
 def debug(msg):
     """ print a debug message. """
@@ -191,8 +191,8 @@ class RecordKeeper():
         """
         debug("remove: %(database_query)s" % locals())
         if not force:
-            self.find( database_query)
-        self.records.remove( database_query )
+            self.find(database_query)
+        self.records.remove(database_query)
 
         return True
 
@@ -200,6 +200,11 @@ class RecordKeeper():
         """ Query the database using database_query, then update all the keys
         where record_data has some new data.
         """
-        debug("update: %(database_query)s with %(record_data)s" % locals())
-        database_results = self.records.update( database_query, record_data, multi=True)
+        if not record_data:
+            raise RequiredField("Missing record_data, unable to update records.")
+
+        debug("!update: %(database_query)s with %(record_data)s" % locals())
+        database_results = self.records.update(database_query, record_data,
+            multi = True)
+
         return database_results

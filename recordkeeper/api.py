@@ -23,7 +23,11 @@ def field_divider(field_list):
         eg. name=my_host_name
     """
 
+
     field_list_type = type(field_list).__name__
+
+    #if field_list_type == 'dict':
+    #    return field_list
 
     debug( "field_divider(field_list=%(field_list)s<%(field_list_type)s>)" % locals())
 
@@ -60,9 +64,16 @@ def field_divider(field_list):
         else:
             display_field_list.append(field)
 
-    debug("field_divider:cli_query_list=%(cli_query_list)s" % locals())
-    debug("field_divider:display_field_list=%(display_field_list)s" % locals())
-    return cli_query_list, display_field_list
+    #debug("field_divider:cli_query_list=%(cli_query_list)s" % locals())
+    #debug("field_divider:display_field_list=%(display_field_list)s" % locals())
+    debug(cli_query_list)
+    debug(display_field_list)
+
+    if not display_field_list:
+        display_field_list = []
+    if not cli_query_list:
+        cli_query_list = []
+    return (cli_query_list, display_field_list)
 
 
 def get_display_fields(field_list):
@@ -73,6 +84,7 @@ def get_display_fields(field_list):
 
 def get_query_fields(field_list):
     """ Given a field_list, only return the display fields in a list. """
+    x = field_divider(field_list)
     cli_query_list, display_field_list = field_divider(field_list)
     return cli_query_list
 
@@ -425,15 +437,23 @@ def update_record(field_list, record_data):
     record_data.
     """
     debug("update_record(%(field_list)s, %(record_data)s)" % locals())
-    cli_query_list, display_field_list = field_divider(field_list)
-    database_query = generate_database_multi_query( cli_query_list )
-    record_data_list, display_field_list = field_divider(record_data)
-    record_data_dict = generate_database_multi_update( record_data_list )
 
-    debug("update_record: record_data_dict=%(record_data_dict)s database_query=%(database_query)s" % locals() )
+    record_data_dict = record_data
+    database_query = field_list
+
+    if not type(field_list) == type({}):
+        cli_query_list = get_query_fields(field_list)
+        database_query = generate_database_multi_query(cli_query_list)
+
+    if not type(record_data) == type({}):
+        record_data_list = get_query_fields(record_data)
+        record_data_dict = generate_database_multi_update(record_data_list)
+
+    debug("update_record: record_data_dict=%(record_data_dict)s "
+          "database_query=%(database_query)s" % locals())
 
     rc = db.RecordKeeper()
-    rc.update( database_query, record_data_dict )
+    rc.update(database_query, record_data_dict)
 
 
 def saved_queries_list():
@@ -454,3 +474,40 @@ def saved_queries_get(query_name):
     rc = db.RecordKeeper()
     query_data = rc.saved_queries_get(query_name=query_name)
     return query_data
+
+
+def extract_names_from_records(record_list):
+    """ Given a list of records, return a list() of names of the records. """
+    if type(record_list).__name__ in ["str", "unicode"]:
+        record_list = find_records(record_list)
+
+    name_list = []
+    for record in record_list:
+        name_list.append(record['name'])
+
+    return name_list
+
+
+def relate_records(query_one, query_two, link="parent"):
+    """ relate 2 groups of records to each other via a defined link.
+    The 2 queries ( query_one and query_two ), will be expanded, then all the
+    records matching the 2 queries will be related via the link.
+    """
+
+    query_two_records = find_records(query_two)
+    debug("-")
+
+    link_key = "link_%(link)s" % locals()
+    name_list = extract_names_from_records(query_two_records)
+    relationship = {link_key: name_list}
+
+    debug("relate_records->update_record(%(query_one)s, %(relationship)s)" % locals())
+
+    update_results = update_record(query_one, relationship )
+
+    debug("--")
+    debug("%s" % find_records(query_one))
+
+    return update_results
+
+     
