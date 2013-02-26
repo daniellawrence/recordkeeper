@@ -257,58 +257,61 @@ def generate_database_query(key, query_operator, value):
         return {"%s" % key: value}
 
     # db.customers.find( { name : { $not : /acme.*corp/i } } );
-    # { key: { $not: value }} 
+    # { key: { $not: value}}
     if query_operator == "!" or query_operator == ".not.":
         return {"%s" % key: {'$ne': value}}
 
     # db.myCollection.find( { a : { $gt: 3 } } );
-    # { key: { $gt: value } } 
-    if query_operator in [ ">", ".gt." ]:
-        return {"%s" % key: {'$gt': float(value) }}
+    # { key: { $gt: value}}
+    if query_operator in [">", ".gt."]:
+        return {"%s" % key: {'$gt': float(value)}}
 
     # db.myCollection.find( { a : { $lt: 3 } } );
-    # { "%s.value" % key: { $lt: value } } 
-    if query_operator in [ "<", '.lt.' ]:
-        return {"%s" % key: {'$lt': float(value) }}
+    # { "%s.value" % key: { $lt: value}}
+    if query_operator in ["<", '.lt.']:
+        return {"%s" % key: {'$lt': float(value)}}
 
     if query_operator == ".ss.":
         return {"%s" % key: {'$regex': '%s' % value}}
 
     if query_operator == "~":
-        return {"%s" % key: {'$regex': '%s' % value }}
+        return {"%s" % key: {'$regex': '%s' % value}}
 
     value_list = []
-    if type(value).__name__ in ['str','unicode'] and ',' in value:
-        value_list = value.split(',') 
+    if type(value).__name__ in ['str', 'unicode'] and ',' in value:
+        value_list = value.split(',')
         for index, value in enumerate(value_list):
             try:
                 value_list[index] = int(value)
             except ValueError:
                 continue
     else:
-        value_list = [ value ]
+        value_list = [value]
 
     if query_operator == ".in.":
-        return {"%s" % key: {'$in': value_list }}
+        return {"%s" % key: {'$in': value_list}}
 
     if query_operator == ".nin.":
-        return {"%s" % key: {'$nin': value_list }}
+        return {"%s" % key: {'$nin': value_list}}
 
-    raise NotImplementedError("Was not able to work generate a filter: %(cli_query)s" % locals())
+    raise NotImplementedError(
+        "Was not able to work generate a filter: %(cli_query)s" % locals())
 
-def generate_database_multi_query( cli_query_list ):
+
+def generate_database_multi_query(cli_query_list):
     """ Take a list of queries (eg. [ os=solaris , class=production ] ) and
     generate a json/dict style filter that can be used on a NoSQL database.
-    The filter is then returned as a python dict(), made up of 1 or many filters.
+    The filter is then returned as a python dict() and
+    is made up of 1 or many filters.
     """
 
     overall_database_query = {}
 
     for cli_query in cli_query_list:
-        key, operator, value = get_key_operator_value_from_cli_query( cli_query)
+        key, operator, value = get_key_operator_value_from_cli_query(cli_query)
         #database_query = generate_database_query( cli_query )
-        database_query = generate_database_query( key, operator, value)
-        debug("generate_database_multi_query: %(database_query)s"  % locals())
+        database_query = generate_database_query(key, operator, value)
+        debug("generate_database_multi_query: %(database_query)s" % locals())
 
         if key not in overall_database_query:
             overall_database_query[key] = database_query
@@ -318,12 +321,12 @@ def generate_database_multi_query( cli_query_list ):
         old_key_query = overall_database_query[key]
         if old_key_query == database_query:
             continue
-        key_or = {'$or': [ old_key_query, database_query ]}
+        key_or = {'$or': [old_key_query, database_query]}
         overall_database_query[key] = key_or
 
     real_database_query = {}
     for key, key_query in overall_database_query.items():
-        real_database_query.update( key_query )
+        real_database_query.update(key_query)
 
     return real_database_query
 
@@ -339,11 +342,11 @@ def find_records(field_list):
 
     # If the record data is a string then convert it to a dict()
     if type(field_list).__name__ in ['str', 'unicode']:
-        # replaced the .split() with the shelx.split() so that quotes are respected.
+        # replaced the .split() with the shelx.split() so that quotes are
+        #respected.
         #field_list = field_list.split()
         import shlex
-        field_list = shlex.split( field_list )
-
+        field_list = shlex.split(field_list)
 
     if type(field_list).__name__ in ['list']:
         cli_query_list, display_field_list = field_divider(field_list)
@@ -363,7 +366,7 @@ def find_records(field_list):
 
     debug("find_records: database_query=%(database_query)s" % locals())
 
-    rc = db.RecordKeeper()   
+    rc = db.RecordKeeper()
     record_list = rc.find(database_query, display_field_list)
     return record_list
 
@@ -380,18 +383,18 @@ def insert_record(record_data):
     if type(record_data).__name__ in ['str', 'unicode']:
         #record_data = record_data.split()
         import shlex
-        record_data = shlex.split( record_data )
+        record_data = shlex.split(record_data)
 
     if type(record_data).__name__ in ['list']:
         cli_query_list, display_field_list = field_divider(record_data)
-        database_query = generate_database_multi_query( cli_query_list )
+        database_query = generate_database_multi_query(cli_query_list)
 
     # If the record_data is already a dict, then add it to the database.
     if type(record_data).__name__ in ['dict']:
         database_query = record_data
 
     rc = db.RecordKeeper()
-    new_record = rc.insert( database_query )
+    new_record = rc.insert(database_query)
     return new_record
 
 
@@ -403,7 +406,7 @@ def delete_record(field_list, force=False):
     # If the record data is a string then convert it to a dict()
     if type(field_list).__name__ in ['str', 'unicode', 'list']:
         cli_query_list, display_field_list = field_divider(field_list)
-        database_query = generate_database_multi_query( cli_query_list )
+        database_query = generate_database_multi_query(cli_query_list)
         
     # If the record_data is already a dict, then add it to the database.
     if type(field_list).__name__ in ['dict']:
