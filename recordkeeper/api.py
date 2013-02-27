@@ -29,27 +29,27 @@ def field_divider(field_list):
     #if field_list_type == 'dict':
     #    return field_list
 
-    debug( "field_divider(field_list=%(field_list)s<%(field_list_type)s>)" % locals())
+    #debug( "field_divider(field_list=%(field_list)s<%(field_list_type)s>)" % locals())
 
     if type(field_list).__name__ in ['str', 'unicode']:
         if ' ' in field_list:
-            debug( "field_divider: cutting field_list='%(field_list)s'" % locals())
+            #debug( "field_divider: cutting field_list='%(field_list)s'" % locals())
             import shlex
-            debug("field_divider: ' ' in field_list, dividing" )
+            #debug("field_divider: ' ' in field_list, dividing" )
             field_list = shlex.split( field_list )
         else:
-            debug( "field_divider: lone field_list='%(field_list)s'" % locals())
+            #debug( "field_divider: lone field_list='%(field_list)s'" % locals())
             new_field_list = field_list
             field_list = []
             field_list.append( new_field_list )
 
-    debug( "field_divider: field_list='%(field_list)s'" % locals())
+    #debug( "field_divider: field_list='%(field_list)s'" % locals())
 
     cli_query_list = []
     display_field_list = []
 
     for field in field_list:
-        debug( "field_divider: field='%(field)s'" % locals())
+        #debug( "field_divider: field='%(field)s'" % locals())
         is_query_field = False
 
         # database_query fields will always have an operator.
@@ -64,10 +64,10 @@ def field_divider(field_list):
         else:
             display_field_list.append(field)
 
-    #debug("field_divider:cli_query_list=%(cli_query_list)s" % locals())
-    #debug("field_divider:display_field_list=%(display_field_list)s" % locals())
-    debug(cli_query_list)
-    debug(display_field_list)
+    debug("field_divider:cli_query_list=%(cli_query_list)s" % locals())
+    debug("field_divider:display_field_list=%(display_field_list)s" % locals())
+    #debug(cli_query_list)
+    #debug(display_field_list)
 
     if not display_field_list:
         display_field_list = []
@@ -90,18 +90,27 @@ def get_query_fields(field_list):
 
 
 def generate_database_multi_update(cli_query_list):
-    """ This allows the CLI to be able to send more than a single key, value for 
+    """ This allows the CLI to be able to send more than a single key, value for
     updates in a single statement.
     """
 
     if type(cli_query_list).__name__ == 'str':
         cli_query_list = cli_query_list.split(' ')
 
+
+    if type(cli_query_list).__name__ == 'dict':
+        tmp_query_list = []
+        for key, value in cli_query_list.items():
+            tmp_query_list.append("%(key)s=%(value)s" % locals())
+        cli_query_list = tmp_query_list
+
     update_dict = {'$set': {}}
     for cli_query in cli_query_list:
         debug("generate_database_multi_update: %(cli_query)s" % locals())
         if '=' in cli_query:
             (key, value) = cli_query.split('=')
+            if ',' in value:
+                value = value.split(',')
             update_dict['$set'].update({'%(key)s' % locals(): value})
 
     if not update_dict['$set']:
@@ -142,7 +151,7 @@ def process_subquery(cli_query):
 
     sq_values_list = []
 
-    # For each result in the subquery, loop over the record and only grab out 
+    # For each result in the subquery, loop over the record and only grab out
     # The value of the key that the query was based on.
     # In the example of:
     #     age=(name=john)
@@ -206,7 +215,7 @@ def process_subquery(cli_query):
 def get_key_operator_value_from_cli_query(cli_query):
     """ Work out the key, operator and the value from a cli_query. """
 
-    debug("get_kov: %(cli_query)s" % locals())
+    #debug("get_kov: %(cli_query)s" % locals())
 
     # TODO: Seams hacky. Think of a better way to do this
     if '(' in cli_query and ')' in cli_query:
@@ -231,7 +240,6 @@ def get_key_operator_value_from_cli_query(cli_query):
 
     value_type = type(value).__name__
 
-
     # If the value is true or True, then convert it to a boolean
     if value_type in ["str", 'unicode'] and value.lower() == "true":
         value = True
@@ -244,7 +252,7 @@ def get_key_operator_value_from_cli_query(cli_query):
     elif value_type in ["str", 'unicode'] and value.isdigit():
         value = int(value)
 
-    debug("get_kov: %s<%s>" % (value, value_type))
+    #debug("get_kov: %s<%s>" % (value, value_type))
 
     return key, query_operator, value
 
@@ -362,7 +370,7 @@ def find_records(field_list):
 
     if type(field_list).__name__ in ['list']:
         cli_query_list, display_field_list = field_divider(field_list)
-        database_query = generate_database_multi_query( cli_query_list )
+        database_query = generate_database_multi_query(cli_query_list)
         cli_query_list, display_field_list = field_divider(field_list)
         debug("find_Records cli_query_list=%(cli_query_list)s" % locals())
         debug("find_Records display_field_list=%(display_field_list)s" % locals())
@@ -400,6 +408,8 @@ def insert_record(record_data):
     if type(record_data).__name__ in ['list']:
         cli_query_list, display_field_list = field_divider(record_data)
         database_query = generate_database_multi_query(cli_query_list)
+
+        debug("")
 
     # If the record_data is already a dict, then add it to the database.
     if type(record_data).__name__ in ['dict']:
@@ -441,13 +451,20 @@ def update_record(field_list, record_data):
     record_data_dict = record_data
     database_query = field_list
 
-    if not type(field_list) == type({}):
-        cli_query_list = get_query_fields(field_list)
-        database_query = generate_database_multi_query(cli_query_list)
+    cli_query_list = get_query_fields(field_list)
+    database_query = generate_database_multi_query(cli_query_list)
 
-    if not type(record_data) == type({}):
-        record_data_list = get_query_fields(record_data)
-        record_data_dict = generate_database_multi_update(record_data_list)
+    if type(record_data).__name__ == 'dict' and '$set' not in record_data.keys():
+        record_data_list = []
+        for key, value in record_data.items():
+            if type(value).__name__ == 'list':
+                record_data_list.append("%s=%s" % (key, ",".join(value)))
+                continue
+            record_data_list.append("%(key)s=%(value)s" % locals())
+        record_data = " ".join(record_data_list)
+
+    record_data_list = get_query_fields(record_data)
+    record_data_dict = generate_database_multi_update(record_data_list)
 
     debug("update_record: record_data_dict=%(record_data_dict)s "
           "database_query=%(database_query)s" % locals())
@@ -503,10 +520,7 @@ def relate_records(query_one, query_two, link="parent"):
 
     debug("relate_records->update_record(%(query_one)s, %(relationship)s)" % locals())
 
-    update_results = update_record(query_one, relationship )
-
-    debug("--")
-    debug("%s" % find_records(query_one))
+    update_results = update_record(query_one, relationship)
 
     return update_results
 
