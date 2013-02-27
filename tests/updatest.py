@@ -23,8 +23,6 @@ class TestUpdate(unittest.TestCase):
         record = recordkeeper.api.find_records("name=sandy")[0]
         self.assertEqual(record['sex'], ['female', 'male'])
 
-
-
     def test_dict_to_query(self):
         data = recordkeeper.api.generate_database_multi_update({'key':'value'})
         self.assertEqual(data, {'$set': {'key': 'value'}})
