@@ -101,6 +101,10 @@ def generate_database_multi_update(cli_query_list):
     if type(cli_query_list).__name__ == 'dict':
         tmp_query_list = []
         for key, value in cli_query_list.items():
+            if type(value).__name__ in ['list', 'set']:
+                for i, single_value in enumerate(value):
+                    value[i] = str(single_value)
+                value = ",".join(value)
             tmp_query_list.append("%(key)s=%(value)s" % locals())
         cli_query_list = tmp_query_list
 
