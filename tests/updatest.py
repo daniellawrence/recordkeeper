@@ -35,9 +35,9 @@ class TestUpdate(unittest.TestCase):
         data = recordkeeper.api.generate_database_multi_update("key=1,2,3")
         self.assertEqual(data, {'$set': {'key': ['1','2','3']}})
 
-    #def test_dict_list_to_query(self):
-    #    data = recordkeeper.api.generate_database_multi_update({'key': [1,2,3]})
-    #    self.assertEqual(data, {'$set': {'key': ['1','2','3']}})
+    def test_dict_list_to_query(self):
+        data = recordkeeper.api.generate_database_multi_update({'key': [1,2,3]})
+        self.assertEqual(data, {'$set': {'key': ['1','2','3']}})
 
     def test_dict_strlist_to_query(self):
         data = recordkeeper.api.generate_database_multi_update({'key': "1,2,3"})

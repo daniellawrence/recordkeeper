@@ -36,9 +36,26 @@ class TestApi(unittest.TestCase):
         name_list = recordkeeper.api.extract_names_from_records(record_list)
         self.assertEqual('fred' in name_list, True)
 
-    def test_relate_records_default(self):
+    def test_relate_single_record_default(self):
         recordkeeper.api.relate_records("name=john", "name=fred")
         john = recordkeeper.api.find_records("name=john")[0]
-        print john
         self.assertEqual(john['link_parent'], 'fred')
 
+    def test_relate_many_records_deafult(self):
+        recordkeeper.api.relate_records("name=john", "name.defined")
+        john = recordkeeper.api.find_records("name=john")[0]
+        self.assertEqual('fred' in john['link_parent'], True)
+        self.assertEqual('john' in john['link_parent'], True)
+        self.assertEqual('jeff' in john['link_parent'], True)
+
+    def test_relate_single_record_custom_link(self):
+        recordkeeper.api.relate_records("name=john", "name=fred", "friends")
+        john = recordkeeper.api.find_records("name=john")[0]
+        self.assertEqual(john['link_friends'], 'fred')
+
+    def test_relate_many_records_custom_link(self):
+        recordkeeper.api.relate_records("name=john", "name.defined", "friends")
+        john = recordkeeper.api.find_records("name=john")[0]
+        self.assertEqual('fred' in john['link_friends'], True)
+        self.assertEqual('john' in john['link_friends'], True)
+        self.assertEqual('jeff' in john['link_friends'], True)
