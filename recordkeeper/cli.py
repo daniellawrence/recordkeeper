@@ -41,6 +41,7 @@ def cli_print_record( field_list, showid=False):
     #    display_field_list.append('name')
 
     if display_field_list:
+        print " ".join(display_field_list)
         simple_format = re.sub('(?P<m>\w+)',"%(\g<m>)s", " ".join(display_field_list) )
         for record in record_list:
             try:
@@ -143,7 +144,6 @@ def print_args(args):
     parser.add_argument("field", type=str, nargs='+') 
     args = parser.parse_args(args)
     fields = args.field
-    print args
     cli_print_record(  fields, showid=args.showid)
 
 
