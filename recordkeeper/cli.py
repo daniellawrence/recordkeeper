@@ -133,12 +133,17 @@ def cli_saved_queries_get(query_name):
         return 
     print " ".join(query_data)
 
+def listkeys_args(args):
+    from recordkeeper.api import list_keys
+    print "\n".join(list_keys())
+
 def print_args(args):
     parser = argparse.ArgumentParser("%s print" % sys.argv[0])
     parser.add_argument("--showid", action='store_true', default=False)
     parser.add_argument("field", type=str, nargs='+') 
     args = parser.parse_args(args)
     fields = args.field
+    print args
     cli_print_record(  fields, showid=args.showid)
 
 
@@ -248,6 +253,10 @@ def main():
 
     if application_switch  in   [ "delete", 'rk_delete.py', 'rk_delete']:
         delete_args(args)
+        sys.exit(0)
+
+    if application_switch  in   [ "listkeys", 'rk_listkeys.py', 'rk_listkeys']:
+        listkeys_args(args)
         sys.exit(0)
 
     print "Unknown application call %(application_switch)s" % locals()

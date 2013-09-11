@@ -9,6 +9,8 @@ setup(name='RecordKeeper',
       author_email='dannyla@linux.com',
       url='http://www.github.com/daniellawrence/recordkeeper',
       packages=['recordkeeper'],
-      scripts=['bin/rk_delete.py','bin/rk_new.py','bin/rk_print.py','bin/rk_update.py','bin/start_webserver.py'],
+      scripts=[
+      'bin/rk_delete.py','bin/rk_new.py','bin/rk_print.py','bin/rk_listkeys.py',
+      'bin/rk_update.py','bin/start_webserver.py'],
       #requires=open('requirements.txt').readlines()
 )

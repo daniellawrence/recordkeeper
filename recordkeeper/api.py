@@ -528,4 +528,8 @@ def relate_records(query_one, query_two, link="parent"):
 
     return update_results
 
-     
+def list_keys():
+    rc = db.RecordKeeper()
+    keys = rc.list_keys()
+    return keys
+
