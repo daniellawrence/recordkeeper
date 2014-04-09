@@ -299,7 +299,7 @@ def generate_database_query(key, query_operator, value):
         return {"%s" % key: {'$regex': '%s' % value}}
 
     if query_operator == "~":
-        return {"%s" % key: {'$regex': '%s' % value}}
+        return {"%s" % key: {'$regex': '%s' % value, '$options': '-i' }}
 
     value_list = []
 
