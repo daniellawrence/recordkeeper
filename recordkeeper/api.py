@@ -302,7 +302,22 @@ def generate_database_query(key, query_operator, value):
         return {"%s" % key: {'$regex': '%s' % value}}
 
     value_list = []
-    if type(value).__name__ in ['str', 'unicode'] and ',' in value:
+
+    if type(value).__name__ in ['str', 'unicode'] \
+       and ',' in value and '[' in value:
+        import ast
+        x = ast.literal_eval(value)
+        for y in x:
+            if isinstance(y, str) or isinstance(y, unicode):
+                value_list.append(y)
+                continue
+            if isinstance(y, list):
+                value_list += y
+                continue
+    elif type(value).__name__ in ['str', 'unicode'] and ',' in value:
+
+
+
         value_list = value.split(',')
         for index, value in enumerate(value_list):
             try:
