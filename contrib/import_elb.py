@@ -38,7 +38,7 @@ def import_elb_aws_cli():
                 continue
 
             if key == "securitygroups":
-                elb['securitygroups'] = value
+                elb['securitygroups_ids'] = value
                 continue
 
             if key == "blockdevicemappings":

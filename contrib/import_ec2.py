@@ -3,6 +3,8 @@ import time
 import json
 import os
 
+from pprint import pprint
+
 import recordkeeper.api
 import recordkeeper.rc_exceptions
 import recordkeeper.settings
@@ -12,7 +14,8 @@ recordkeeper.settings.DEBUG = True
 PRETTY_NAMES = {
     'vpcid': 'vpc',
     'privateipaddress': 'ip',
-    'instanceid': 'instances'
+    'instanceid': 'instances',
+    'subnetid': 'subnets'
 }
 
 
@@ -25,6 +28,10 @@ def import_ec2_aws_cli():
     stats = {'added': 0, 'failed': 0}
     for r in ec2_list:
         ec2_raw = r['Instances'][0]
+
+        if ec2_raw['State']['Name'] == "terminated":
+            continue
+    
         ec2 = {}
 
         tags = {}
@@ -81,8 +88,10 @@ def import_ec2_aws_cli():
 
             #print key, pprint(value)
 
+        pprint(ec2_raw)
         for bad_name, good_name in PRETTY_NAMES.items():
             ec2[good_name] = ec2[bad_name]
+        print
 
         try:
             recordkeeper.api.insert_record(ec2)
