@@ -224,7 +224,7 @@ def get_key_operator_value_from_cli_query(cli_query):
     # TODO: Seams hacky. Think of a better way to do this
     if '(' in cli_query and ')' in cli_query:
         cli_query = process_subquery(cli_query)
-        print "cli_query=%(cli_query)s" % locals()
+        debug("cli_query=%(cli_query)s" % locals())
 
     query_operator = None
     for operator in OPERATOR_LIST:

@@ -153,6 +153,8 @@ class RecordKeeper():
             try:
                 if ',' in value:
                     record_data[key] = value.split(',')
+                if isinstance(value, list):
+                    continue
             except TypeError:
                 continue
 
