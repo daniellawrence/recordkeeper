@@ -356,7 +356,7 @@ def generate_database_multi_query(cli_query_list):
             overall_database_query[key] = database_query
             continue
 
-        print "duplicate key=%(key)s" % locals()
+        debug("duplicate key=%(key)s" % locals())
         old_key_query = overall_database_query[key]
         if old_key_query == database_query:
             continue
