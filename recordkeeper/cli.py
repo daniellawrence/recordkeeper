@@ -3,6 +3,7 @@ import re
 import argparse
 import sys
 import os
+from collections import defaultdict
 
 
 
@@ -23,7 +24,7 @@ def cli_print_record( field_list, showid=False):
     """
     debug("cli_print_record(%s)" % field_list)
     try:
-        record_list = api.find_records(field_list)
+        raw_record_list = api.find_records(field_list)
     except NoRecordsFound as error:
         print "No records found for: %(field_list)s, %(error)s" % locals() 
         return False
@@ -41,8 +42,26 @@ def cli_print_record( field_list, showid=False):
     #    display_field_list.append('name')
 
     if display_field_list:
-        print " ".join(display_field_list)
+        record_list = []
+        record_length = defaultdict(int)
+        for raw_record in raw_record_list:
+            record = {}
+            for k, v in raw_record.items():
+                if isinstance(v, list):
+                    v = ",".join(v)
+                record[k] = v
+                if record_length[k] < len(str(v)):
+                    record_length[k] = len(str(v))
+            record_list.append(record)
+
         simple_format = re.sub('(?P<m>\w+)',"%(\g<m>)s", " ".join(display_field_list) )
+
+        # Better formatting of the simple_format string
+        display_string = ""
+        for d in display_field_list:
+            display_string += "%%(%s)-%ds " % (d, record_length[d])
+        simple_format = display_string
+
         for record in record_list:
             try:
                 print simple_format % record
