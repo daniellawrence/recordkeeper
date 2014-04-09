@@ -57,9 +57,10 @@ def import_ec2_aws_cli():
                 continue
 
             if key == "tags":
+                print value
                 ec2['tags'] = []
-                for k, v in value:
-                    k = t['Key']
+                for t in value:
+                    k = t['Key'].lower()
                     v = t['Value']
                     ec2['tag_%s' % k] = v
                     ec2['tags'].append(k)
