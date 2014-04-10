@@ -155,6 +155,9 @@ class RecordKeeper():
                     record_data[key] = value.split(',')
                 if isinstance(value, list):
                     continue
+                if isinstance(value, set):
+                    record_data[key] = list(value)
+                    continue
             except TypeError:
                 continue
 
