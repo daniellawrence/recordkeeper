@@ -41,18 +41,19 @@ def cli_print_record( field_list, showid=False):
     #if 'name' not in display_field_list:
     #    display_field_list.append('name')
 
-    if display_field_list:
-        record_list = []
-        record_length = defaultdict(int)
-        for raw_record in raw_record_list:
-            record = {}
-            for k, v in raw_record.items():
-                if isinstance(v, list):
-                    v = ",".join(v)
+    record_list = []
+    record_length = defaultdict(int)
+    for raw_record in raw_record_list:
+        record = raw_record
+        for k, v in raw_record.items():
+            if isinstance(v, list):
+                v = ",".join(v)
                 record[k] = v
-                if record_length[k] < len(str(v)):
-                    record_length[k] = len(str(v))
-            record_list.append(record)
+            if record_length[k] < len(str(v)):
+                record_length[k] = len(str(v))
+        record_list.append(record)
+
+    if display_field_list:
 
         simple_format = re.sub('(?P<m>\w+)',"%(\g<m>)s", " ".join(display_field_list) )
 
@@ -69,18 +70,18 @@ def cli_print_record( field_list, showid=False):
                 debug("cli_print_record: unable to print fields for record: %(error)s" % locals())
     else:
         for record in record_list:
-            print "--"
-            #print "name: %(name)s" % record
-            for key, value in record.items():
+            print
+            print '\033[1m%(name)s\033[0m' % record
+            for key, value in sorted(record.items()):
                 if type(value).__name__ in [ 'str', 'unicode','int','float','bool']:
-                    print "%(key)s: %(value)s" % locals()
+                    print "  %(key)s: %(value)s" % locals()
                     continue
                 elif type(value).__name__ in [ 'list', 'set']:
-                    print "%s: %s" % ( key, ",".join( value) )
+                    print "  %s: %s" % ( key, ",".join( value) )
                     continue
                 elif type(value).__name__ == 'ObjectId':
                     if showid:
-                        print "%(key)s: %(value)s" % locals()
+                        print "  %(key)s: %(value)s" % locals()
                     continue
                 elif type(value).__name__ == 'NoneType':
                     continue
