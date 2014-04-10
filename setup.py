@@ -10,7 +10,8 @@ setup(name='RecordKeeper',
       url='http://www.github.com/daniellawrence/recordkeeper',
       packages=['recordkeeper'],
       scripts=[
-      'bin/rk_delete.py','bin/rk_new.py','bin/rk_print.py',
-      'bin/rk_update.py','bin/start_webserver.py'],
+          'bin/rk_delete','bin/rk_new','bin/rk_print',
+          'bin/rk_update','bin/start_webserver.py',
+          'bin/rk_listkeys'],
       #requires=open('requirements.txt').readlines()
 )
