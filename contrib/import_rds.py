@@ -29,6 +29,7 @@ def import_rds_aws_cli():
 
         rds['name'] = rds_raw['DBInstanceIdentifier']
         rds['_type'] = 'rds'
+        
 
         for key, value in rds_raw.items():
             key = key.lower()

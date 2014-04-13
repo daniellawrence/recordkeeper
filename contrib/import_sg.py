@@ -35,7 +35,7 @@ def import_sg_aws_cli():
             sg_raw.update(tags)
 
         sg['name'] = sg_raw['GroupName']
-        sg['_type'] = 'sg'
+        sg['_type'] = 'securitygroups'
         sg['securitygroups_ids'] = [sg_raw['GroupId']]
 
         for key, value in sg_raw.items():

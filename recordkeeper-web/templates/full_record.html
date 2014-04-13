@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %} - Home{% endblock %}
+{% block content %}
+<table class='table table-condensed' >
+  <tr>
+    <th>Key</th>
+    <th>Value</th>
+  </tr>
+
+{% for key, value in full_record %}
+  <tr>
+    <td>
+      <a href='/s/{{key}}.defined'>{{key}}</a>
+    </td>
+    <td>
+      {% if value is string or value is number %}
+          <a href='/s/{{key}}={{value}}'>{{value}}</a>
+      {% elif value is iterable  %}
+	  {% for value_item in value %}
+          <a href='/s/{{key}}={{value_item}}'>{{value_item}}</a>
+	  {% endfor %}
+      {% else %}
+          <a href='/s/{{key}}={{value}}'>! {{value}}</a>
+      {% endif %}
+    </td>
+  </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

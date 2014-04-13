@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %} - Home{% endblock %}
+{% block content %}
+{{query}}
+
+<form method='post' >
+  <div id="prefetch">
+    <input class="typeahead" type="text" placeholder="Add query column" name="show" >
+  </div>
+    <input type="hidden" name="show" value="{{keys|join(" ")}}" >
+  <input type="submit" />
+</form>
+
+<table class='table table-condensed' >
+  <tr>
+    {% for key in keys %}
+    <th>{{key}}</th>
+    {% endfor %}
+  </tr>
+{% for r in records %}
+  <tr>
+    {% for key in keys %}
+    <td>
+      <a href='/s/name={{key}}'>{{r[key]}}</a>
+    </td>
+    {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+
+<script>
+var countries = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  limit: 10,
+  prefetch: {
+    // url points to a json file that contains an array of country names, see
+    // https://github.com/twitter/typeahead.js/blob/gh-pages/data/countries.json
+    //url: '../data/countries.json',
+    url: '/json/listkeys',
+    //url: 'https://github.com/twitter/typeahead.js/blob/gh-pages/data/countries.json',
+    // the json file contains an array of strings, but the Bloodhound
+    // suggestion engine expects JavaScript objects so this converts all of
+    // those strings
+    filter: function(list) {
+      return $.map(list, function(country) { return { name: country }; });
+    }
+  }
+});
+ 
+// kicks off the loading/processing of `local` and `prefetch`
+countries.initialize();
+ 
+// passing in `null` for the `options` arguments will result in the default
+// options being used
+$('#prefetch .typeahead').typeahead(null, {
+  name: 'countries',
+  displayKey: 'name',
+  // `ttAdapter` wraps the suggestion engine in an adapter that
+  // is compatible with the typeahead jQuery plugin
+  source: countries.ttAdapter()
+});
+</script>
+
+{% endblock %}

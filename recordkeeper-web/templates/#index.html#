@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %} - Home{% endblock %}
+{% block content %}
+{{query}}
+
+
+<table class='table table-condensed' >
+  <tr>
+    {% for key in show %}
+    <th>{{key}}</th>
+    {% endfor %}
+  </tr>
+{% for r in records %}
+  <tr>
+
+    {% for key in show %}
+    <td>
+      {% if r[key]|islist %}
+	  {% for value_item in r[key] %}
+          <a href='/s/{{key}}={{value_item}}'>{{value_item}}</a>
+	  {% endfor %}
+	  {% else %}
+	  <a href='/s/{{key}}={{r[key]}}'>{{r[key]|safe}}</a>
+	  {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+
+<script>
+var countries = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  limit: 5,
+  prefetch: {
+    url: '/json/listkeys',
+    filter: function(list) {
+      return $.map(list, function(country) { return { name: country }; });
+    }
+  }
+});
+ 
+// kicks off the loading/processing of `local` and `prefetch`
+countries.initialize();
+ 
+// passing in `null` for the `options` arguments will result in the default
+// options being used
+$('#prefetch .typeahead').typeahead(null, {
+  name: 'countries',
+  displayKey: 'name',
+  // `ttAdapter` wraps the suggestion engine in an adapter that
+  // is compatible with the typeahead jQuery plugin
+  source: countries.ttAdapter()
+});
+</script>
+
+{% endblock %}

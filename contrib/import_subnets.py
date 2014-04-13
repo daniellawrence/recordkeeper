@@ -35,7 +35,7 @@ def import_sn_aws_cli():
             sn_raw.update(tags)
 
         sn['name'] = sn_raw['SubnetId']
-        sn['_type'] = 'sn'
+        sn['_type'] = 'subnets'
         sn['subnets'] = [sn_raw['SubnetId']]
 
         for key, value in sn_raw.items():

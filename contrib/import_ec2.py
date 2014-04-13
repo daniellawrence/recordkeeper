@@ -42,7 +42,7 @@ def import_ec2_aws_cli():
         ec2_raw.update(tags)
 
         ec2['name'] = ec2_raw['Name']
-        ec2['_type'] = 'ec2'
+        ec2['_type'] = 'instances'
 
         for key, value in ec2_raw.items():
             key = key.lower()
