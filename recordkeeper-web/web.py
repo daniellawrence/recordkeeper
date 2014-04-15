@@ -6,12 +6,15 @@ Would be really good to move this into a more MVC style with jinja2 templates.
 """
 
 from flask import Flask, jsonify, render_template, request, redirect, Response
-app = Flask(__name__)
+from bson.objectid import ObjectId
+from markupsafe import Markup
+from recordkeeper.api import find_records, list_keys
 
 import json
-from recordkeeper.api import find_records, list_keys
 import recordkeeper
-from bson.objectid import ObjectId
+import urllib
+
+app = Flask(__name__)
 
 recordkeeper.settings.DEBUG = True
 
@@ -90,8 +93,8 @@ def index():
     show, show_filter = request_args()
     records = find_records(show + show_filter)
     print "records: %s" % records
-    return render_template("index.html", 
-                           records=records, 
+    return render_template("index.html",
+                           records=records,
                            show=show
     )
 
@@ -99,7 +102,7 @@ def index():
 @app.route("/r/<name>")
 def single_record(name):
     full_record = find_records("name=%s" % name)[0]
-    return render_template("full_record.html", 
+    return render_template("full_record.html",
                            full_record=sorted(full_record.items())
     )
 
@@ -116,14 +119,12 @@ def search(query):
         return single_record(name=record_name)
 
     print "len(records): %d" % len(records)
-    return render_template("index.html", 
-                           records=records, 
+    return render_template("index.html",
+                           records=records,
                            query=query,
                            show=show
     )
 
-import urllib
-from markupsafe import Markup
 
 @app.template_filter('urlencode')
 def urlencode_filter(s):
@@ -137,7 +138,7 @@ def urlencode_filter(s):
 
 
 @app.template_filter('islist')
-def urlencode_filter(s):
+def islist_filter(s):
     if isinstance(s, list):
         return True
     return False
