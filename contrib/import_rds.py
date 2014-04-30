@@ -29,7 +29,8 @@ def import_rds_aws_cli():
 
         rds['name'] = rds_raw['DBInstanceIdentifier']
         rds['_type'] = 'rds'
-        
+
+        pprint(rds_raw)
 
         for key, value in rds_raw.items():
             key = key.lower()
@@ -62,6 +63,8 @@ def import_rds_aws_cli():
                 rds['subnetid'] = []
                 for sn in value['Subnets']:
                     rds['subnetid'].append(sn['SubnetIdentifier'])
+                rds['vpcid'] = value['VpcId']
+                rds['subnets'] = rds['subnetid']
                 continue
                 
             if key == "endpoint":

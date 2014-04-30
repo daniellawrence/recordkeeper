@@ -25,7 +25,8 @@ def import_elb_aws_cli():
         elb_raw = r
         elb = {}
 
-        elb['name'] = elb_raw['LoadBalancerName']
+        name = elb_raw['LoadBalancerName']
+        elb['name'] = name
         elb['_type'] = 'elb'
 
         for key, value in elb_raw.items():
@@ -52,9 +53,10 @@ def import_elb_aws_cli():
             if key == "placement":
                 elb['availabilityzone'] = value['AvailabilityZone']
                 continue
-                
+
             if key == "subnets":
                 elb['subnets'] = value
+                elb['subnetid'] = value
                 continue
 
             if key == "instances":
