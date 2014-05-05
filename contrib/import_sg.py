@@ -79,7 +79,7 @@ def import_sg_aws_cli():
                     for ipr in r['IpRanges']:
                         rule = "%s:%s" % (ipr['CidrIp'], r['ToPort'])
                         sg['egress_allow'].append(rule)
-                        sg['egress'].append("0 ALLOW %s" % rule)
+                        sg['egress'].append("ALLOW 0 %s" % rule)
 
                     for sub_sg in r['UserIdGroupPairs']:
                         sub_gid = sub_sg['GroupId']
@@ -87,10 +87,10 @@ def import_sg_aws_cli():
 
                         rule = "%s:%s" % (sub_gid, r['ToPort'])
                         sg['egress_allow'].append(rule)
-                        sg['egress'].append("0 ALLOW %s" % rule)
+                        sg['egress'].append("ALLOW 0 %s" % rule)
 
                         find_query = "_type.not.securitygroups securitygroups_ids=%s" % sub_gid
-                        find_query = "securitygroups_ids=%s" % sub_gid
+                        #find_query = "securitygroups_ids=%s" % sub_gid
                         try:
                             items_in_sg = recordkeeper.api.find_records(find_query)
                         except Exception:
@@ -99,11 +99,9 @@ def import_sg_aws_cli():
                             pass
 
                         for item in items_in_sg:
-                            if 'ip' not in item:
-                                continue
                             rule = "%s/32:%s" % (item['ip'], port)
                             sg['egress_allow'].append(rule)
-                            sg['egress'].append("0 ALLOW %s" % rule)
+                            sg['egress'].append("ALLOW 0 %s" % rule)
 
                 continue
 
@@ -125,14 +123,14 @@ def import_sg_aws_cli():
                     for ipr in r['IpRanges']:
                         rule = "%s %s:%s" % (rn, ipr['CidrIp'], port) 
                         sg['ingress_allow'].append(rule)
-                        sg['ingress'].append("0 ALLOW %s" % rule)
+                        sg['ingress'].append("ALLOW %s" % rule)
 
                     for sub_sg in r['UserIdGroupPairs']:
                         sub_gid = sub_sg['GroupId']
                         sg['securitygroups_ids'] = sub_gid
 
                         find_query = "_type.not.securitygroups securitygroups_ids=%s" % sub_gid
-                        find_query = "securitygroups_ids=%s" % sub_gid
+                        #find_query = "securitygroups_ids=%s" % sub_gid
                         try:
                             items_in_sg = recordkeeper.api.find_records(find_query)
                         except Exception:
@@ -142,8 +140,6 @@ def import_sg_aws_cli():
                             pass
 
                         for item in items_in_sg:
-                            if 'ip' not in item:
-                                continue
                             rule = "%s/32:%s" % (item['ip'], port)
                             sg['ingress_allow'].append(rule)
                             sg['ingress'].append("0 ALLOW %s" % rule)
