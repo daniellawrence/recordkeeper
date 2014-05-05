@@ -146,10 +146,10 @@ class RecordKeeper():
         except KeyError:
             raise MissingRequiredInformaton("record_data is missing required field 'name'")
 
-        try:
+        if '_type' in record_data:
             record_type = record_data['_type']
-        except KeyError:
-            raise MissingRequiredInformaton("record_data is missing required field '_type'")
+        else:
+            record_type = '_record'
 
         # name is the unique key that is used across the.
         unique_query = {'name': record_name, '_type': record_type}
