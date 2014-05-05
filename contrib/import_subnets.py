@@ -38,6 +38,8 @@ def import_sn_aws_cli():
         sn['_type'] = 'subnets'
         sn['subnets'] = [sn_raw['SubnetId']]
 
+        print sn_raw
+
         for key, value in sn_raw.items():
             key = key.lower()
             if isinstance(value, str) or isinstance(value, unicode):
