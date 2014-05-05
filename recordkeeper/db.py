@@ -177,7 +177,9 @@ class RecordKeeper():
         existing_record = self.find_one(unique_query)
         if existing_record:
             raise DuplicateRecord(
-                "Failed to add duplicate record: %(record_data)s" % locals()
+                "Failed to add duplicate record: %s %s - %s" % (
+                    record_data['name'], record_data['_type'], record_data
+                )
             )
 
         # If it is a brand new record, save it to the database.
