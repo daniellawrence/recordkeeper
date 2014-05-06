@@ -5,12 +5,15 @@ import recordkeeper.api
 import recordkeeper.db
 import recordkeeper.rc_exceptions
 
+
 class TestQuery(unittest.TestCase):
 
     def setUp(self):
         recordkeeper.settings.DATABASE_NAME = "unittest"
         recordkeeper.api.delete_record("name.defined", force=True)
-        recordkeeper.api.insert_record("name=john age=1 sex=male address='key with spaces'")
+        recordkeeper.api.insert_record(
+            "name=john age=1 sex=male address='key with spaces'"
+        )
         recordkeeper.api.insert_record("name=jeff age=2 sex=male")
         recordkeeper.api.insert_record("name=fred age=2 sex=male")
         recordkeeper.api.insert_record("name=sandy age=3 sex=female,male")
@@ -24,7 +27,10 @@ class TestQuery(unittest.TestCase):
             self.assertEqual(count_records, expected_records)
             return
         if expected_records == 0:
-            self.matches_expected_exception(query,  recordkeeper.rc_exceptions.NoRecordsFound)
+            self.matches_expected_exception(
+                query,
+                recordkeeper.rc_exceptions.NoRecordsFound
+            )
 
     def matches_expected_exception(self, query, expected_exception):
         with self.assertRaises(expected_exception):
@@ -36,7 +42,6 @@ class TestQuery(unittest.TestCase):
     def test_query_with_spaces(self):
         self.matches_excpected_records("address='key with spaces'", 1)
 
-        
     def test_query_for_space(self):
         self.matches_excpected_records("address~' '", 1)
 
@@ -67,15 +72,10 @@ class TestQuery(unittest.TestCase):
         self.matches_excpected_records("sex=(age>1)", 5)
         self.matches_excpected_records("sex=(age<6)", 5)
 
-
-
     def test_key_list(self):
         rc = recordkeeper.db.RecordKeeper()
         key_list = rc.list_keys()
         self.assertEqual(key_list,['_id', 'address', 'age', 'job', 'name', 'sex'])
-
-
-
 
     def test_value_list(self):
         self.matches_excpected_records("sex=female", 1)
@@ -107,7 +107,6 @@ class TestQuery(unittest.TestCase):
 
         self.matches_excpected_records("sex=(name=john)", 5)
         self.matches_excpected_records("sex!(name=john)", 1)
-
 
     def test_value_int(self):
         self.matches_excpected_records("age=1", 1)
@@ -191,8 +190,6 @@ class TestQuery(unittest.TestCase):
         self.matches_excpected_records("age.not.1", 5)
         self.matches_excpected_records("age.not.3", 3)
         self.matches_excpected_records("age.not.0", 6)
-        
-
 
     def test_operator_in(self):
         # str nin / in
