@@ -2,6 +2,8 @@
 from recordkeeper.api import find_records
 import sys
 
+WITH_ROUTE_INFO = False
+
 rk_filter = ""
 
 if len(sys.argv) > 1:
@@ -24,7 +26,10 @@ for instance in find_records("_type=instances %s" % rk_filter):
 
     # RouteTable lookup
     find_rtb = "_type=rtb subnetid.in.%s" % sn_ids
-    rtb = find_records(find_rtb)
+    try:
+        rtb = find_records(find_rtb)
+    except Exception:
+        rtb = []
 
     print "instance:", instance['name'], "id:", instance['instances']
     print "="*80
