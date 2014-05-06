@@ -86,8 +86,8 @@ def import_sg_aws_cli():
                         sg['securitygroups_ids'] = sub_gid
 
                         rule = "%s:%s" % (sub_gid, r['ToPort'])
-                        sg['egress_allow'].append(rule)
-                        sg['egress'].append("ALLOW 0 %s" % rule)
+                        #sg['egress_allow'].append(rule)
+                        #sg['egress'].append("ALLOW 0 %s" % rule)
 
                         find_query = "_type.not.securitygroups securitygroups_ids=%s" % sub_gid
                         #find_query = "securitygroups_ids=%s" % sub_gid
@@ -122,8 +122,8 @@ def import_sg_aws_cli():
 
                     for ipr in r['IpRanges']:
                         rule = "%s %s:%s" % (rn, ipr['CidrIp'], port) 
-                        sg['ingress_allow'].append(rule)
-                        sg['ingress'].append("ALLOW %s" % rule)
+                        #sg['ingress_allow'].append(rule)
+                        #sg['ingress'].append("ALLOW %s" % rule)
 
                     for sub_sg in r['UserIdGroupPairs']:
                         sub_gid = sub_sg['GroupId']
