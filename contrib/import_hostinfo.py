@@ -24,7 +24,7 @@ def import_hostinfo_csv(filename):
         try:
             recordkeeper.api.insert_record(row)
             stats['added'] += 1
-        except recordkeeper.rc_exceptions.DuplicateRecord as error:
+        except recordkeeper.rc_exceptions.DuplicateRecord:
             stats['failed'] += 1
 
     finished = time.time()

@@ -2,7 +2,6 @@
 import time
 import json
 import os
-from pprint import pprint
 
 import recordkeeper.api
 import recordkeeper.rc_exceptions
@@ -100,7 +99,7 @@ def import_sg_aws_cli():
                             pass
 
                         for item in items_in_sg:
-                            rule = "%s/32:%s" % (item['ip'], port)
+                            rule = "%s/32" % item['ip']
                             sg['egress_allow'].append(rule)
                             sg['egress'].append("ALLOW 0 %s" % rule)
 
