@@ -66,7 +66,7 @@ def import_rds_aws_cli():
                 rds['vpcid'] = value['VpcId']
                 rds['subnets'] = rds['subnetid']
                 continue
-                
+
             if key == "endpoint":
                 rds['endpoint'] = "%s:%s" % (value['Address'], value['Port'])
                 continue
@@ -85,8 +85,8 @@ def import_rds_aws_cli():
                 rds['availabilityzones'] = value
                 continue
 
-            #print key, pprint(value)
-        #print "-"
+            # print key, pprint(value)
+        # print "-"
 
         for bad_name, good_name in PRETTY_NAMES.items():
             rds[good_name] = rds[bad_name]

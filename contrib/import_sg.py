@@ -86,13 +86,14 @@ def import_sg_aws_cli():
                         sg['securitygroups_ids'] = sub_gid
 
                         rule = "%s:%s" % (sub_gid, r['ToPort'])
-                        #sg['egress_allow'].append(rule)
+                        # sg['egress_allow'].append(rule)
                         #sg['egress'].append("ALLOW 0 %s" % rule)
 
                         find_query = "_type.not.securitygroups securitygroups_ids=%s" % sub_gid
                         #find_query = "securitygroups_ids=%s" % sub_gid
                         try:
-                            items_in_sg = recordkeeper.api.find_records(find_query)
+                            items_in_sg = recordkeeper.api.find_records(
+                                find_query)
                         except Exception:
                             print sg['name'], "WARNING!: no matches for", sub_sg
                             continue
@@ -116,13 +117,15 @@ def import_sg_aws_cli():
 
                     port = ''
                     if r['ToPort'] == r['FromPort']:
-                        port =  '%s/%s' % (r['ToPort'], r['IpProtocol'].upper())
+                        port = '%s/%s' % (r['ToPort'],
+                                          r['IpProtocol'].upper())
                     else:
-                        port = '%s-%s/%s' % (r['ToPort'], r['FromPort'], r['IpProtocol'].upper())
+                        port = '%s-%s/%s' % (r['ToPort'],
+                                             r['FromPort'], r['IpProtocol'].upper())
 
                     for ipr in r['IpRanges']:
-                        rule = "%s %s:%s" % (rn, ipr['CidrIp'], port) 
-                        #sg['ingress_allow'].append(rule)
+                        rule = "%s %s:%s" % (rn, ipr['CidrIp'], port)
+                        # sg['ingress_allow'].append(rule)
                         #sg['ingress'].append("ALLOW %s" % rule)
 
                     for sub_sg in r['UserIdGroupPairs']:
@@ -132,7 +135,8 @@ def import_sg_aws_cli():
                         find_query = "_type.not.securitygroups securitygroups_ids=%s" % sub_gid
                         #find_query = "securitygroups_ids=%s" % sub_gid
                         try:
-                            items_in_sg = recordkeeper.api.find_records(find_query)
+                            items_in_sg = recordkeeper.api.find_records(
+                                find_query)
                         except Exception:
                             print sg['name'], "WARNING!, no matches for", sub_sg
                             print "rk_print name _type", find_query
@@ -150,7 +154,7 @@ def import_sg_aws_cli():
                 sg['availabilityzone'] = value['AvailabilityZone']
                 continue
 
-            #print key, pprint(value)
+            # print key, pprint(value)
 
         for bad_name, good_name in PRETTY_NAMES.items():
             sg[good_name] = sg[bad_name]

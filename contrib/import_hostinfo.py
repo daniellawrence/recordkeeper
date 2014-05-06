@@ -8,6 +8,8 @@ import recordkeeper.rc_exceptions
 import recordkeeper.settings
 
 recordkeeper.settings.DEBUG = False
+
+
 def import_hostinfo_csv(filename):
     start = time.time()
     f = open(filename)
@@ -20,7 +22,7 @@ def import_hostinfo_csv(filename):
         row['_type'] = row['type']
 
         try:
-            recordkeeper.api.insert_record( row )
+            recordkeeper.api.insert_record(row)
             stats['added'] += 1
         except recordkeeper.rc_exceptions.DuplicateRecord as error:
             stats['failed'] += 1

@@ -20,7 +20,6 @@ KNOWN_PROTCOLS = {
     '6': 'TCP',
     '17': 'UDP'
 }
-                  
 
 
 def import_nacl_aws_cli():
@@ -46,7 +45,6 @@ def import_nacl_aws_cli():
         acl['_type'] = 'acls'
         acl['acls_ids'] = [acl_raw['NetworkAclId']]
         acl['acls'] = [acl_raw['NetworkAclId']]
-
 
         for key, value in acl_raw.items():
             key = key.lower()
@@ -82,10 +80,12 @@ def import_nacl_aws_cli():
                         pr = rule['PortRange']
                         p = KNOWN_PROTCOLS[rule['Protocol']]
                         if pr['To'] == pr['From']:
-                            v = '%s %s:%s/%s' % (rn, rule['CidrBlock'], pr['To'], p)
+                            v = '%s %s:%s/%s' % (rn,
+                                                 rule['CidrBlock'], pr['To'], p)
                         else:
-                            v = '%s %s:%s-%s/%s' % (rn, rule['CidrBlock'], pr['To'], pr['From'], p)
-                    
+                            v = '%s %s:%s-%s/%s' % (rn,
+                                                    rule['CidrBlock'], pr['To'], pr['From'], p)
+
                     if rule['Egress']:
                         if rule['RuleAction'] == 'allow':
                             acl['egress_allow'].append(v)
@@ -106,14 +106,14 @@ def import_nacl_aws_cli():
                 acl['subnetid'] = []
                 if not value:
                     continue
-                print 
-                print 
+                print
+                print
                 for acc in value:
                     print acc
                     acl['subnetid'].append(acc['SubnetId'])
 
             print key, pprint(value)
-            print 
+            print
 
         for bad_name, good_name in PRETTY_NAMES.items():
             acl[good_name] = acl[bad_name]

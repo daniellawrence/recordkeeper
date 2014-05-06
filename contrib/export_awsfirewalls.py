@@ -32,20 +32,20 @@ for instance in find_records("_type=instances %s" % rk_filter):
         rtb = []
 
     print "instance:", instance['name'], "id:", instance['instances']
-    print "="*80
+    print "=" * 80
 
     print
-    print "-"*80
+    print "-" * 80
     print "Routes"
-    print "-"*80
+    print "-" * 80
     for r in rtb:
         for route in r['routes']:
             print "ROUTE", route, " rtb:", r['name']
 
     print
-    print "-"*80
+    print "-" * 80
     print "Network Access Control Lists"
-    print "-"*80
+    print "-" * 80
     #
     for i in nacl:
         for r in i['ingress']:
@@ -54,10 +54,9 @@ for instance in find_records("_type=instances %s" % rk_filter):
             print "ENGRESS", r, "nacl:", i['name']
 
     print
-    print "-"*80
+    print "-" * 80
     print "Security Groups"
-    print "-"*80
-
+    print "-" * 80
 
     for i in sg:
         if len(i['ingress']) + len(i['egress']) == 0:
@@ -69,5 +68,5 @@ for instance in find_records("_type=instances %s" % rk_filter):
             print "EGRESS", r, "security_group:", i['name']
         print
 
-    print 
-    print 
+    print
+    print

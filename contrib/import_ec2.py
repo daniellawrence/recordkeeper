@@ -31,7 +31,7 @@ def import_ec2_aws_cli():
 
         if ec2_raw['State']['Name'] == "terminated":
             continue
-    
+
         ec2 = {}
 
         tags = {}
@@ -86,7 +86,7 @@ def import_ec2_aws_cli():
                 ec2['availabilityzone'] = value['AvailabilityZone']
                 continue
 
-            #print key, pprint(value)
+            # print key, pprint(value)
 
         pprint(ec2_raw)
         for bad_name, good_name in PRETTY_NAMES.items():

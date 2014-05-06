@@ -41,7 +41,7 @@ def import_nrtb_aws_cli():
                 tags[k] = v
             rtb_raw.update(tags)
 
-        #pprint(rtb_raw)
+        # pprint(rtb_raw)
 
         rtb['name'] = rtb_raw['RouteTableId']
         rtb['_type'] = 'rtb'
@@ -78,9 +78,11 @@ def import_nrtb_aws_cli():
                         continue
                     v = None
                     if 'GatewayId' in r:
-                        v = "%s %s" % (r['DestinationCidrBlock'], r['GatewayId'])
+                        v = "%s %s" % (
+                            r['DestinationCidrBlock'], r['GatewayId'])
                     else:
-                        v = "%s %s" % (r['DestinationCidrBlock'], r['InstanceId'])
+                        v = "%s %s" % (
+                            r['DestinationCidrBlock'], r['InstanceId'])
                     rtb['routes'].append(v)
                 continue
 
@@ -88,12 +90,12 @@ def import_nrtb_aws_cli():
                 continue
 
             print key, pprint(value)
-            print 
+            print
 
         for bad_name, good_name in PRETTY_NAMES.items():
             rtb[good_name] = rtb[bad_name]
 
-        #pprint(rtb)
+        # pprint(rtb)
 
         try:
             recordkeeper.api.insert_record(rtb)
