@@ -33,12 +33,12 @@ def field_divider(field_list):
 
     if type(field_list).__name__ in ['str', 'unicode']:
         if ' ' in field_list:
-            #debug( "field_divider: cutting field_list='%(field_list)s'" % locals())
+            debug( "field_divider: cutting field_list='%(field_list)s'" % locals())
             import shlex
-            #debug("field_divider: ' ' in field_list, dividing" )
+            debug("field_divider: ' ' in field_list, dividing" )
             field_list = shlex.split( field_list )
         else:
-            #debug( "field_divider: lone field_list='%(field_list)s'" % locals())
+            debug( "field_divider: lone field_list='%(field_list)s'" % locals())
             new_field_list = field_list
             field_list = []
             field_list.append( new_field_list )
@@ -460,12 +460,14 @@ def delete_record(field_list, force=False):
     rc.remove(database_query, force = force)
 
 
-def update_record(field_list, record_data):
+def update_record(field_list, raw_record_data):
     """ accept a field_list and record_data.
     All records that match the queries in field_list will be updated with
     record_data.
     """
+    record_data = raw_record_data
     debug("update_record(%(field_list)s, %(record_data)s)" % locals())
+
 
     record_data_dict = record_data
     database_query = field_list
@@ -473,7 +475,7 @@ def update_record(field_list, record_data):
     cli_query_list = get_query_fields(field_list)
     database_query = generate_database_multi_query(cli_query_list)
 
-    if type(record_data).__name__ == 'dict' and '$set' not in record_data.keys():
+    if isinstance(record_data, dict) and '$set' not in record_data.keys():
         record_data_list = []
         for key, value in record_data.items():
             if type(value).__name__ == 'list':
@@ -483,7 +485,8 @@ def update_record(field_list, record_data):
         record_data = " ".join(record_data_list)
 
     record_data_list = get_query_fields(record_data)
-    record_data_dict = generate_database_multi_update(record_data_list)
+    #record_data_dict = generate_database_multi_update(record_data_list)
+    record_data_dict = {'$set': raw_record_data}
 
     debug("update_record: record_data_dict=%(record_data_dict)s "
           "database_query=%(database_query)s" % locals())
